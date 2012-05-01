@@ -28,7 +28,6 @@ class PT07Y {
 
                 // keeps track of nodes we have already visited so as not to revisit
                 visited = new int[numNodes+1];
-                //System.out.println(Arrays.toString(visited));
 
                 for(int i = 0; i < numEdges; i++) {
                     input = br.readLine().split(" ");
@@ -38,18 +37,7 @@ class PT07Y {
                     nodes.get(n2).add(n1);
                 }
 
-                /*
-                for(int i = 0; i < nodes.size(); i++) {
-                    System.out.print(i + ":");
-                    for(int j = 0; j < nodes.get(i).size(); j++) {
-                        System.out.print(" " + nodes.get(i).get(j));
-                    }
-                    System.out.println();
-                }
-                */
-
                 dfs(1);
-                //System.out.println(Arrays.toString(visited));
 
                 for(int i = 1; i < visited.length; i++) {
                     if(visited[i] == 0) {
@@ -74,7 +62,6 @@ class PT07Y {
             return;
         else {
             visited[startingVertex] = 1;
-            //System.out.println("Visiting node: " + startingVertex);
             for(int i = 0; i < nodes.get(startingVertex).size(); i++) {
                 dfs(nodes.get(startingVertex).get(i));
             }
