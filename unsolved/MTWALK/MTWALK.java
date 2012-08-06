@@ -1,6 +1,7 @@
 /* We will employ the hill climbing algorithm and search for the optimal heights */
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.Arrays;
 
 class MTWALK {
@@ -9,9 +10,9 @@ class MTWALK {
     private static boolean[][] used = null;
     private static int MATRIX_SIZE;
     private static int highest = -100000, lowest = 100000;
-    private static boolean reachedHome = false;
+    private static int INFINITY = 100000;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         try {
             br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -34,10 +35,11 @@ class MTWALK {
                 System.out.println(Arrays.toString(grid[i]));
             }
 
-            // Begin mountain walking
+            System.out.println("Starting\tHigh: " + highest + "\tLow: " + lowest);
+
             climb();
 
-            System.out.println("high = " + (highest+1) + "\tlow = " + (lowest-1));
+            System.out.println("Ending\tHigh: " + highest + "\tLow: " + lowest);
         }
         catch(Exception e) {
             e.getMessage();
@@ -50,122 +52,104 @@ class MTWALK {
         }
     }
 
-    private static void climb() {
-        int previousHigh = highest, previousLow = lowest;
-        System.out.println("MATRIX_SIZE-1 = " + (MATRIX_SIZE-1));
+    public static void climb() {
+        // binary search for high and low while checking if it
+        // decreases the total difference
 
-        /*
-         * THE INDIVIDUAL DFS METHODS APPEAR TO WORK
-         * SO NOW WE MUST INTEGRATE THEM SOMEWHAT AND
-         * ADD CHECKS SO THAT THE PATH IT TAKES ALSO
-         * FOLLOWS A PATH THAT SATISFIES THE OPPOSITE
-         * CONSTRAINT
-         */
-        thisiswhereweshouldgotomorrowwhenwestart
+        int tempHigh = highest/2, tempLow = (lowest == 0) ? lowest++ : lowest*2;
+        int d0 = INFINITY, d1 = INFINITY, d2 = INFINITY;
 
-        do {
+        // run once with temphigh, once with templow, once with both
+        boolean changed = true;
+        while(changed) {
             used = new boolean[MATRIX_SIZE][MATRIX_SIZE];
-            reachedHome = false;
-            previousHigh = highest;
-            highest--;
-            System.out.println("Highest: " + highest + "\tPrevious Highest: " + previousHigh);
-            dfsHighest(0, 0);
-            System.out.println("DID WE REACH HOME? " + reachedHome);
-        } while(reachedHome);
+            if(tryToClimb(0, 0, highest, tempLow)) {
+                d0 = highest - tempLow;
+                changed = true;
+            }
+            System.out.println("d0 = " + d0);
 
-        System.out.println("---- END OF HIGHEST REACHED ----");
-        System.out.println("Best high: " + previousHigh);
-
-        do {
             used = new boolean[MATRIX_SIZE][MATRIX_SIZE];
-            reachedHome = false;
-            previousLow = lowest;
-            lowest++;
-            System.out.println("Lowest: " + lowest + "\tPrevious Lowest: " + previousLow);
-            dfsLowest(0, 0);
-            System.out.println("DID WE REACH HOME? " + reachedHome);
-        } while(reachedHome);
+            if(tryToClimb(0, 0, tempHigh, lowest)) {
+                d1 = tempHigh - lowest;
+                changed = true;
+            }
+            System.out.println("d1 = " + d1);
 
-        System.out.println("---- END OF LOWEST REACHED ----");
-        System.out.println("Best low: " + previousLow);
-    }
+            used = new boolean[MATRIX_SIZE][MATRIX_SIZE];
+            if(tryToClimb(0, 0, tempHigh, tempLow)) {
+                d2 = tempHigh - tempLow;
+                changed = true;
+            }
+            System.out.println("d2 = " + d2);
 
-    private static void dfsHighest(int row, int col) {
-        if(reachedHome) return;
-
-        System.out.println("row: " + row + "\tcol: " + col);
-        if(row-1 >= 0 && grid[row-1][col] <= highest && !used[row-1][col]) {
-            // row-1 can never be the target (bottom left) so just return
-            // a recursive call
-            used[row-1][col] = true;
-            dfsHighest(row-1, col);
-        }
-        //else if(row+1 < MATRIX_SIZE && grid[row+1][col] <= highest && !used[row+1][col]) {
-        if(row+1 < MATRIX_SIZE && grid[row+1][col] <= highest && !used[row+1][col]) {
-            if(row+1 == MATRIX_SIZE-1 && col == MATRIX_SIZE-1) {
-                System.out.println("FOUND HOME");
-                reachedHome = true;
+            if(d2 != INFINITY) {
+                highest = tempHigh;
+                lowest = tempLow;
+            }
+            else if(d1 < d2) {
+                highest = tempHigh;
+            }
+            else if(d2 < d1){
+                lowest = tempLow;
             }
             else {
-                used[row+1][col] = true;
-                dfsHighest(row+1, col);
-            }
-        }
-        //else if(col-1 >= 0 && grid[row][col-1] <= highest && !used[row][col-1]) {
-        if(col-1 >= 0 && grid[row][col-1] <= highest && !used[row][col-1]) {
-            used[row][col-1] = true;
-            dfsHighest(row, col-1);
-        }
-        //else if(col+1 <= MATRIX_SIZE-1 && grid[row][col+1] <= highest && !used[row][col+1]) {
-        if(col+1 <= MATRIX_SIZE-1 && grid[row][col+1] <= highest && !used[row][col+1]) {
-            if(row == MATRIX_SIZE-1 && col+1 == MATRIX_SIZE-1) {
-                System.out.println("FOUND HOME");
-                reachedHome = true;
-            }
-            else {
-                used[row][col+1] = true;
-                dfsHighest(row, col+1);
+                changed = false;
             }
         }
     }
 
+    public static boolean tryToClimb(int row, int col, int high, int low) {
+        // found home
+        if(row == MATRIX_SIZE-1 && col == MATRIX_SIZE-1)
+            return true;
 
-    private static void dfsLowest(int row, int col) {
-        if(reachedHome) return;
+        used[row][col] = true;
 
-        System.out.println("row: " + row + "\tcol: " + col);
-        if(row-1 >= 0 && grid[row-1][col] >= lowest && !used[row-1][col]) {
-            // row-1 can never be the target (bottom left) so just return
-            // a recursive call
-            used[row-1][col] = true;
-            dfsLowest(row-1, col);
-        }
-        //else if(row+1 < MATRIX_SIZE && grid[row+1][col] <= highest && !used[row+1][col]) {
-        if(row+1 < MATRIX_SIZE && grid[row+1][col] >= lowest && !used[row+1][col]) {
-            if(row+1 == MATRIX_SIZE-1 && col == MATRIX_SIZE-1) {
-                System.out.println("FOUND HOME");
-                reachedHome = true;
-            }
-            else {
-                used[row+1][col] = true;
-                dfsLowest(row+1, col);
-            }
-        }
-        //else if(col-1 >= 0 && grid[row][col-1] <= highest && !used[row][col-1]) {
-        if(col-1 >= 0 && grid[row][col-1] >= lowest && !used[row][col-1]) {
-            used[row][col-1] = true;
-            dfsLowest(row, col-1);
-        }
-        //else if(col+1 <= MATRIX_SIZE-1 && grid[row][col+1] <= highest && !used[row][col+1]) {
-        if(col+1 <= MATRIX_SIZE-1 && grid[row][col+1] >= lowest && !used[row][col+1]) {
-            if(row == MATRIX_SIZE-1 && col+1 == MATRIX_SIZE-1) {
-                System.out.println("FOUND HOME");
-                reachedHome = true;
-            }
-            else {
-                used[row][col+1] = true;
-                dfsLowest(row, col+1);
+        // deltas
+        int[] dx = {-1, 1, 0, 0};
+        int[] dy = {0, 0, -1, 1};
+
+        // loop through the different possibilities
+        for(int i = 0; i < 4; i++) {
+            int nr = row + dx[i];
+            int nc = col + dy[i];
+
+
+            if(valid(nr, nc)) {
+                System.out.println("entered if");
+                // found home
+                if(row == MATRIX_SIZE-1 && col == MATRIX_SIZE-1)
+                    return true;
+                else
+                    return tryToClimb(nr, nc, high, low);
+                //else if(grid[nr][nc] <= high && grid[nr][nc] >= low)
+                    //return tryToClimb(nr, nc, high, low);
             }
         }
+
+        return false;
+    }
+
+    public static boolean valid(int row, int col) {
+        if(row >= 0 && col >= 0 && row < MATRIX_SIZE && col < MATRIX_SIZE && !used[row][col])
+            return true;
+        return false;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

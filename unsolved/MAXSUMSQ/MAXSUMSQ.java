@@ -6,7 +6,7 @@ class MAXSUMSQ {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        int numCases = Integer.parseInt(br.readLine().trim());
+        int numCases = Integer.parseInt(br.readLine());
 
         for(int i = 0; i < numCases; i++) {
             int numNumbers = Integer.parseInt(br.readLine().trim());
