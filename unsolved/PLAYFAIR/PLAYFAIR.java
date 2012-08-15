@@ -20,6 +20,8 @@ class PLAYFAIR {
             for(int i = 0; i < numCases; i++) {
                 // first read in the message
                 String temp = br.readLine();
+                String encrypted = "";
+                String message = "";
                 String s = "";
 
                 while(temp.charAt(0) != '#') {
@@ -27,16 +29,37 @@ class PLAYFAIR {
                     temp = br.readLine();
                 }
 
+                temp = br.readLine();
+                while(temp.charAt(0) != '#') {
+                    encrypted += temp + " ";
+                    temp = br.readLine();
+                }
+
+                temp = br.readLine();
+                while(temp.charAt(0) != '#') {
+                    message += temp + " ";
+                    temp = br.readLine();
+                }
+
                 s = s.toUpperCase();
 
+                /*
+                 * I feel like a key part I didnt do and the problem
+                 * does not state is that the program is supposed to
+                 * create the key from reading the plaintext and the
+                 * corresponding encrypted text. Then from that use
+                 * the key to decrypt the message
+                 */
+
                 // remove all non alpha-numeric chars
-                s = s.replaceAll("\\W", "");
+                //s = s.replaceAll("\\W", "");
 
-                s = s.replace('J', 'I');
+                //s = s.replace('J', 'I');
 
-                s = formDigraphs(s);
+                //s = formDigraphs(s);
 
-                System.out.println(s);
+                System.out.println("Case " + i + ":");
+                System.out.println(decrypt(message));
             }
         }
         catch(Exception e) {
@@ -95,7 +118,49 @@ class PLAYFAIR {
         return temp;
     }
 
-    public static String encrypt(String s) {
-        // do shit with the digraph key
+    public static String decrypt(String s) {
+        String temp = "";
+
+        for(int i = 0; i < s.length(); i+=3) {
+            int[] coords1 = findCoords(s.charAt(i));
+            int[] coords2 = findCoords(s.charAt(i+1));
+
+            if(coords1[0] == coords2[0]) {
+                // they are in the same row
+                // shift left one col and keep row
+                temp += key[coords1[0]][(coords1[1] - 1 + 5) % 5];
+                temp += key[coords2[0]][(coords2[1] - 1 + 5) % 5];
+                temp += ' ';
+            }
+            else if(coords1[1] == coords2[1]) {
+                // they are in the same col
+                // shift down one row and keep col
+                temp += key[(coords1[0] - 1 + 5) % 5][coords1[1]];
+                temp += key[(coords2[0] - 1 + 5) % 5][coords2[1]];
+                temp += ' ';
+            }
+            else {
+                // different row and col
+                temp += key[coords1[0]][coords2[1]];
+                temp += key[coords2[0]][coords1[1]];
+                temp += ' ';
+            }
+        }
+
+        return temp;
+    }
+
+    // helper method to decrypt that will
+    // return the {row, col} of the char input
+    public static int[] findCoords(char c) {
+        for(int i = 0; i < key.length; i++) {
+            for(int j = 0; j < key[i].length; j++) {
+                if(key[i][j] == c) {
+                    int[] coords =  {i, j};
+                    return coords;
+                }
+            }
+        }
+        return null;
     }
 }
