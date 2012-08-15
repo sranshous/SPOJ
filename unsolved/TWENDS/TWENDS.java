@@ -2,10 +2,17 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 class TWENDS {
+    // scores
     public static int p1;
     public static int p2;
+
+    // pointers to which card we're on
     public static int leftSide, rightSide;
+
+    // total amount of cards
     public static int numCards;
+
+    // keep track of game #
     public static int gameNum = 1;
     public static String[] input;
 
@@ -30,29 +37,6 @@ class TWENDS {
         catch(Exception e) {
             e.getMessage();
             e.printStackTrace();
-        }
-    }
-
-    public static void p1Move() {
-    }
-
-    public static void p2Move() {
-        int toAdd = 0;
-        if(Integer.parseInt(input[leftSide]) == Integer.parseInt(input[rightSide])) {
-            p2 += Integer.parseInt(input[leftSide]);
-            leftSide++;
-        }
-        else {
-            int lo = Integer.parseInt(input[leftSide]);
-            int ro = Integer.parseInt(input[rightSide]);
-            if(lo > ro) {
-                p2 += lo;
-                leftSide++;
-            }
-            else {
-                p2 += ro;
-                rightSide--;
-            }
         }
     }
 }
