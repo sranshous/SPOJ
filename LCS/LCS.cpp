@@ -9,13 +9,14 @@ void print2D(int**, int, int);
 int main() {
     string line1, line2;
     cin >> line1 >> line2;
-    int LCS = LCSdp(line1, line2);
+
+    //int LCS = LCSdp(line1, line2);
     cout << LCS << endl;
 
     return 0;
 }
 
-// DP solution. O(n^2) time and space complexity
+//DP solution. O(n^2) time and space complexity
 int LCSdp(string first, string second) {
     int fsize = first.length() + 1;
     int ssize = second.length() + 1;
@@ -44,9 +45,10 @@ int LCSdp(string first, string second) {
     //print2D(dp, fsize, ssize);
 
     // deallocate 2d array
-    for(int i = 0; i < fsize; i++)
-        delete [] dp[i];
-    delete [] dp;
+    // comment out for additional speed
+    //for(int i = 0; i < fsize; i++)
+        //delete [] dp[i];
+    //delete [] dp;
 
     return length;
 }
