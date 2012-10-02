@@ -12,6 +12,11 @@ class DIVSUM {
     private static final int NUM = 500001;
     private static HashMap<Integer, List<Integer>> hm = new HashMap<Integer, List<Integer>>();
 
+    /* Idea:
+     *      Create an arraylist for every map entry and just add to that array list in the factoring
+     *      for loop. This would eliminate the need to create a new arraylist every so often.
+     */
+
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -22,26 +27,33 @@ class DIVSUM {
             int number = n;
             int sr = (int)Math.sqrt(n);
             int[] nums = new int[sr+3];
+            List<Integer> factors;
 
-            // prime factors.
-            List<Integer> factors = new ArrayList<Integer>();
-            int j = 2;
-            while(j < nums.length) {
-                if(n % j == 0) {
-                    n /= j;
-                    nums[j]++;
-                    factors.add(j);
+            if(!hm.containsKey(number)) { // this is a new number to factor
+                // prime factors.
+                factors = new ArrayList<Integer>();
+                int j = 2;
+                while(j < nums.length) {
+                    if(n % j == 0) {
+                        n /= j;
+                        nums[j]++;
+                        factors.add(j);
+                    }
+                    else {
+                        j++;
+                    }
                 }
-                else {
-                    j++;
-                }
+
+                // remember factors in an attempt to speed up
+                hm.put(number, factors);
+            }
+            else { // we have already calculated the factors
+                System.out.println("We remembered the factors");
+                factors = hm.get(number);
             }
 
-            // remember factors in an attempt to speed up
-            hm.put(number, factors);
-
             List<Integer> toMult = new ArrayList<Integer>();
-            j = 2;
+            int j = 2;
 
             while(j < nums.length) {
                 if(nums[j] > 0) {
