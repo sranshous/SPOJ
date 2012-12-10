@@ -7,8 +7,10 @@ import java.util.Comparator;
 
 class ROADS {
     private static BufferedReader br;
+    private static StringBuilder sb;
 
     public static void main(String[] args) throws Exception {
+        sb = new StringBuilder();
         br = new BufferedReader(new InputStreamReader(System.in));
 
         int numCases = readInt();
@@ -20,8 +22,10 @@ class ROADS {
 
             ArrayList<ArrayList<Edge>> graph = readGraph(numRoads, numCities);
 
-            System.out.println(findPath(graph, numCoins, numCities));
+            sb.append(findPath(graph, numCoins, numCities) + "\n");
         }
+
+        System.out.println(sb);
     }
 
     private static int readInt() throws Exception {
@@ -67,8 +71,6 @@ class ROADS {
 
             for(Edge e : graph.get(v.vertexNum)) {
                 if(v.totalCost + e.cost <= numCoins) {
-                   //(v.totalCost + e.cost == numCoins && e.destination == target))) {
-                    //!visited[e.destination]) {
                     Vertex w = new Vertex(e.destination, v.totalDistance + e.distance,
                                         v.totalCost + e.cost);
                     pq.offer(w);
